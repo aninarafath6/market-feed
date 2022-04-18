@@ -1,12 +1,19 @@
 const otp = require("../utils/otp.util");
 const userAuth = require("../helpers/auth/user.auth.js");
 const jwt = require("../utils/jwt.util");
-const verify = require("../utils/verify.util");
+const { validationResult } = require("express-validator");
+
 module.exports = {
   sendOtp: async (req, res) => {
     console.log("-> send otp route");
+
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array(), status: false });
+    }
+
     try {
-      await verify.verifyPhone(req.body.phone);
       otp
         .sendOtp(req.body.phone, req.body.channel)
         .then((response) => {
@@ -21,8 +28,12 @@ module.exports = {
   },
   verifyOtp: async (req, res) => {
     console.log("-> verify otp route");
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array(), status: false });
+    }
     try {
-      await verify.verifyPhone(req.body.phone);
       otp
         .verifyOtp(req.body.phone, req.body.otp)
         .then((response) => {
@@ -65,9 +76,13 @@ module.exports = {
   },
   createUser: async (req, res) => {
     console.log("-> create user route");
+    const errors = validationResult(req);
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array(), success: false });
+    }
     try {
       // verify phone number is okay
-      await verify.verifyPhone(req.body.user.phone);
       userAuth
         .createUser(req.body.user)
         .then(async (response) => {
