@@ -3,6 +3,7 @@ const collections = require("../../config/collections.config");
 module.exports = {
   checkUser: check,
   createUser: (user) => {
+    user.phone = parseInt(user.phone);
     return new Promise((resolve, reject) => {
       check(user.phone)
         .then((data) => {
